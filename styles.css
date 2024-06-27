@@ -113,14 +113,13 @@ footer {
   }
   
   .calendar {
-      width: 40%;
+      width: 850px;
       font-family: Corbel, arial;
-      border: 1px none #DDDDDD;
-      border-radius: 0px;
       min-height: 220px;
-      text-align: right;
-      margin: 0 auto;
+      text-align: center;
+      margin: auto;
       padding: 0 10px;
+      border: 1px solid;
   }
   
   .calendar-graph text.wday,
@@ -137,7 +136,6 @@ footer {
       text-align: right;
       padding: 0 14px 10px 0;
       display: inline-block;
-      float: right;
   }
   
   div.float-right div {
