@@ -36,12 +36,23 @@ nav {
 }
 
 .grid-item {
+    display: flex;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.8);
     font-size: 30px;
     text-align: center;
     width: 420px;
+    height: 200px;
     margin: auto;
+    align-items: center;
+}
+
+#monee-thumbnail {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #047526;
+    font-size: 70px;
+    color: #ccc;
+    justify-content: center;
 }
 
 
