@@ -35,8 +35,8 @@ nav {
     margin: auto;
 }
 
-#monee-thumbnail {
-    width: 425px;
+#monee-thumbnail { /* 438 x 200 */
+    width: 420px;
     height: 67px;
     font-family: 'Trebuchet MS', sans-serif, Tahoma, sans-serif;
     background-color: #e3e3e3;
@@ -47,8 +47,8 @@ nav {
     padding-left: 10px;
 }
 
-.fic-thumbnail {
-    width: 430px;
+.fic-thumbnail { /* 433 x 200 */
+    width: 425px;
     padding: 36px 0 0 0;
     height: 156px;
     border: 4px solid #d8d8d8;
@@ -61,8 +61,25 @@ nav {
     margin-left: auto;
 }
 
-#hian-thumbnail {
-    width: 435px;
+#hian-thumbnail { /* 420 x 200 */
+    width: 422px;
+    height: 192px;
+    border: 4px solid #737373;
+    margin: auto 0 -4px 0;
+}
+
+.ffa-thumbnail { /* 441 x 200 */
+    width: 433px;
+    padding: 60px 0 0 0;
+    height: 132px;
+    border: 4px solid #90c08c;
+}
+
+#ffa-thumbnail {
+    display: block;
+    width: 40%;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 h1 {
