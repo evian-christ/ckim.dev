@@ -109,7 +109,7 @@ nav {
 }
 
 h1 {
-    font-family: Helvetica, sans-serif, monospace;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -119,11 +119,12 @@ h1 {
 }
 
 h2 {
-    font-family: Helvetica, sans-serif, monospace;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
+    margin-top: 100px;
 }
 
 .sub-title {
-    font-family: Helvetica, sans-serif, monospace;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
     font-size: 15pt;
     margin-top: -20px;
     margin-bottom: 30px;
@@ -131,6 +132,7 @@ h2 {
 
 footer {
     text-align: center;
+    margin-top: 100px;
 }
 
 /* ------------------ monee ------------------ */
@@ -144,12 +146,39 @@ footer {
 
 #monee-img-01 {
     margin-right: 80px;
+    margin-bottom: 30px;
 }
 
 .article-1 {
-    font-family: Helvetica, sans-serif, monospace;
-    width: 40%;
-    text-align: center;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
+    width: 700px;
+    text-align: justify;
+    line-height: 150%;
+}
+
+.article-2 {
+    font-family: "Inter", Helvetica, sans-serif, monospace;
+    width: 550px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.article-3 {
+    font-family: "Inter", Helvetica, sans-serif, monospace;
+    width: 500px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+ul {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
 }
 
 
@@ -220,9 +249,23 @@ footer {
       /* border: 1px solid; */
   }
 
-  @media (max-width: 950px) {
+  @media (max-width: 900px) {
     .calendar {
         display: none;
+    }
+
+    .article-1 {
+        width: 80%;
+    }
+  }
+
+  @media (max-width: 650px) {
+    .article-2 {
+        width: 90%;
+    }
+
+    .article-3 {
+        width: 410px;
     }
   }
   
