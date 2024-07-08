@@ -1,5 +1,11 @@
 h1 {
     text-align: center;
+    text-decoration: none;
+}
+
+#title {
+    text-decoration: none;
+    color: black;
 }
 
 nav {
