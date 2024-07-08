@@ -118,10 +118,33 @@ h1 {
     font-size: 30pt;
 }
 
+h2 {
+    font-family: Helvetica, sans-serif, monospace;
+}
+
+.sub-title {
+    font-family: Helvetica, sans-serif, monospace;
+    font-size: 15pt;
+    margin-top: -20px;
+    margin-bottom: 30px;
+}
+
 footer {
     text-align: center;
 }
 
+/* ------------------ monee ------------------ */
+
+.monee-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+
+/* ------------------ misc ------------------ */
 
 :root {
     --color-calendar-graph-day-bg: #dddbdb;
