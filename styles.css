@@ -52,6 +52,11 @@ nav {
     padding-left: 10px;
 }
 
+#monee-link {
+    text-decoration: none;
+    color: #ccc;
+}
+
 #monee-thumbnail:hover {
     background-color: #b4b4b4;
 }
