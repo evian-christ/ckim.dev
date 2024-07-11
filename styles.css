@@ -1,6 +1,13 @@
 h1 {
     text-align: center;
     text-decoration: none;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+    font-size: 30pt;
 }
 
 #title {
@@ -14,7 +21,7 @@ nav {
 }
 
 .navi {
-    font-family: Helvetica, sans-serif, monospace;
+    font-family: "Inter", Helvetica, sans-serif, monospace;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
@@ -55,6 +62,10 @@ nav {
 #monee-link {
     text-decoration: none;
     color: #ccc;
+}
+
+.thumbnails-link {
+    text-decoration: none;
 }
 
 #monee-thumbnail:hover {
@@ -108,16 +119,6 @@ nav {
     filter: hue-rotate(270deg) invert(70%);
 }
 
-h1 {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-style: normal;
-    font-variation-settings:
-      "wdth" 100;
-    font-size: 30pt;
-}
-
 h2 {
     font-family: "Inter", Helvetica, sans-serif, monospace;
     margin: 100px 0 30px 0
@@ -131,6 +132,7 @@ h2 {
 }
 
 footer {
+    font-family: "Inter", Helvetica, sans-serif, monospace;
     text-align: center;
     margin-top: 100px;
 }
