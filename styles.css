@@ -179,6 +179,12 @@ li {
     margin-bottom: 10px;
 }
 
+#fic-img-01 {
+    margin-top: 60px;
+    margin-bottom: 30px;
+    width: 60%;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.104);
+}
 
 
 /* ------------------ misc ------------------ */
