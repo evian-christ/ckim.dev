@@ -194,17 +194,20 @@ li {
 .calendar {
     width: 850px;
     font-family: Corbel, arial;
-    min-height: 220px;
     text-align: center;
     margin: auto;
-    padding: 15px 2px 0 18px;
-    background-color: #f5f5f5e8;
+    padding: 15px 2px 10px 18px;
+    /* background-color: #f5f5f5e8; */
     /* border: 1px solid; */
 }
 
 @media (max-width: 900px) {
 .calendar {
-    display: none;
+    width: 80%;
+}
+
+.github-cont {
+    width: 100%;
 }
 
 .article-1 {
