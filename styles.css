@@ -43,7 +43,7 @@ nav {
     flex-wrap: wrap;
     justify-content: center;
     /* border: 1px solid rgba(0, 0, 0, 0.8); */
-    width: 44%;
+    width: 100%;
     min-width: 430px;
     margin: auto;
 }
