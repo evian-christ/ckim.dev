@@ -179,7 +179,7 @@ li {
     margin-bottom: 10px;
 }
 
-#fic-img-01 {
+.fic-img-01 {
     margin-top: 60px;
     margin-bottom: 30px;
     width: 60%;
@@ -217,6 +217,10 @@ li {
 .body-list {
     width: 80%;
 }
+
+.fic-img-01 {
+    width: 90%;
+}
 }
 
 @media (max-width: 650px) {
@@ -226,5 +230,9 @@ li {
 
 .body-list {
     width: 410px;
+}
+
+.fic-img-01 {
+    width: 110%;
 }
 }
