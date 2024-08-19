@@ -39,11 +39,10 @@ nav {
 
 .projects {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     /* border: 1px solid rgba(0, 0, 0, 0.8); */
-    width: 100%;
+    width: 60%;
     min-width: 430px;
     margin: auto;
 }
@@ -221,6 +220,10 @@ li {
 .fic-img-01 {
     width: 90%;
 }
+
+.projects {
+    width: 100%;
+}
 }
 
 @media (max-width: 650px) {
@@ -234,5 +237,9 @@ li {
 
 .fic-img-01 {
     width: 110%;
+}
+
+.projects {
+    width: 100%;
 }
 }
