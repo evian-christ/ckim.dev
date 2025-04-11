@@ -1,245 +1,124 @@
-h1 {
-    text-align: center;
-    text-decoration: none;
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-style: normal;
-    font-variation-settings:
-      "wdth" 100;
-    font-size: 30pt;
-}
-
-#title {
-    text-decoration: none;
-    color: black;
-}
-
-nav {
-    text-align: center;
-    padding-bottom: 10px;
-}
-
-.navi {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-    font-variation-settings:
-      "wdth" 100;
-    text-decoration: none;
-    color:#000;
-    font-size: 20px;
-}
-
-.navi:hover {
-    background-color: black;
-    color: white;
-}
-
-.projects {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    /* border: 1px solid rgba(0, 0, 0, 0.8); */
-    width: 60%;
-    min-width: 430px;
-    margin: auto;
-}
-
-#monee-thumbnail { /* 435 x 200 */
-    width: 425px;
-    height: 67px;
-    font-family: 'Trebuchet MS', sans-serif, Tahoma, sans-serif;
-    background-color: #e3e3e3;
-    font-size: 70px;
-    color: #ccc;
-    padding-top: 132px;
-    padding-left: 10px;
-}
-
-#monee-link {
-    text-decoration: none;
-    color: #ccc;
-}
-
-.thumbnails-link {
-    text-decoration: none;
-}
-
-#monee-thumbnail:hover {
-    background-color: #b4b4b4;
-}
-
-.fic-thumbnail { /* 435 x 200 */
-    width: 433px;
-    height: 198px;
-    border: 1px solid #d8d8d8;
-}
-
-.fic-thumbnail-img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin-right: auto; 
-    margin-left: auto;
-}
-
-.fic-thumbnail:hover {
-    filter: hue-rotate(270deg) invert(20%);
-}
-
-#hian-thumbnail { /* 435 x 200 */
-    width: 435px;
-    height: 200px;
-    margin: auto 0 -4px 0;
-}
-
-#hian-thumbnail:hover {
-    filter: hue-rotate(270deg) invert(70%);
-}
-
-.ffa-thumbnail { /* 435 x 200 */
-    width: 433px;
-    padding: 60px 0 0 0;
-    height: 138px;
-    border: 1px solid #c5c5c5;
-}
-
-#ffa-thumbnail {
-    display: block;
-    width: 40%;
-    margin-right: auto;
-    margin-left: auto;
-}
-
-.ffa-thumbnail:hover {
-    background-color: rgb(76, 76, 76);
-    filter: hue-rotate(270deg) invert(70%);
-}
-
-h2 {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    margin: 100px 0 30px 0
-}
-
-.sub-title {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    font-size: 15pt;
-    margin-top: -20px;
-    margin-bottom: 30px;
-}
-
-footer {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    text-align: center;
-    margin-top: 100px;
-}
-
-/* ------------------ monee ------------------ */
-
-.monee-main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-#monee-img-01 {
-    margin-right: 80px;
-    margin-bottom: 30px;
-}
-
-.body-parag {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    width: 700px;
-    text-align: justify;
-    line-height: 150%;
-}
-
-.body-list {
-    font-family: "Inter", Helvetica, sans-serif, monospace;
-    width: 700px;
-    margin: 0 auto;
+/* Reset & basic styles */
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-ul {
-    list-style-type: none; /* Remove default list styling */
-    padding: 0;
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f7f7f7;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
 }
 
-ol {
-    list-style-type: none; /* Remove default list styling */
-    padding: 0;
+header {
+    width: 100%;
+    max-width: 1200px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-li {
+header h1 {
+    font-size: 2rem;
     margin-bottom: 10px;
 }
 
-.fic-img-01 {
-    margin-top: 60px;
-    margin-bottom: 30px;
-    width: 60%;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.104);
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
 }
 
+nav a {
+    text-decoration: none;
+    color: #007acc;
+    font-weight: 500;
+}
 
-/* ------------------ misc ------------------ */
-
-
-  
 .calendar {
-    width: 850px;
-    font-family: Corbel, arial;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.calendar img {
+    max-width: 100%;
+    height: auto;
+    margin-left: -5px; /* slight left adjustment */
+}
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.project {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     text-align: center;
-    margin: auto;
-    padding: 15px 2px 10px 18px;
-    /* background-color: #f5f5f5e8; */
-    /* border: 1px solid; */
+    transition: transform 0.3s;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    min-height: 220px;
 }
 
-@media (max-width: 900px) {
-.calendar {
-    width: 80%;
+.project:hover {
+    transform: translateY(-5px);
 }
 
-.github-cont {
+.project img {
     width: 100%;
+    height: auto;
+    display: block;
 }
 
-.body-parag {
-    width: 80%;
+.project-title {
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
-.body-list {
-    width: 80%;
-}
-
-.fic-img-01 {
-    width: 90%;
-}
-
-.projects {
+footer {
     width: 100%;
-}
-}
-
-@media (max-width: 650px) {
-.body-parag {
-    width: 90%;
-}
-
-.body-list {
-    width: 410px;
+    max-width: 1200px;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+    color: #666;
 }
 
-.fic-img-01 {
-    width: 110%;
-}
-
-.projects {
-    width: 100%;
-}
+@media(max-width: 768px) {
+    header {
+        padding: 15px;
+    }
+    nav {
+        gap: 10px;
+    }
+    main {
+        grid-template-columns: 1fr;
+    }
+    header h1 {
+        font-size: 1.8rem;
+    }
 }
