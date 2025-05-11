@@ -15,7 +15,7 @@ body {
     padding: 20px;
 }
 
-header {
+.header-container {
     width: 100%;
     max-width: 1200px;
     background: #fff;
@@ -129,4 +129,8 @@ footer {
     header h1 {
         font-size: 1.8rem;
     }
+}
+
+#header-placeholder {
+  width: 100%;
 }
