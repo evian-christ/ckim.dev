@@ -8,27 +8,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="site-title">
-      <h1>Chan Kim</h1>
-    </div>
-    <nav class="main-nav">
-      <a href="#works">Works</a>
-      <a href="#notes">Notes</a>
-      <a href="https://www.linkedin.com/in/chankim97" target="_blank">LinkedIn</a>
-      <a href="https://github.com/evian-christ" target="_blank">GitHub</a>
-    </nav>
-    <div class="calendar">
-      <img class="github-cont" src="https://ghchart.rshah.org/evian-christ" alt="evian-christ's github contributions" />
-    </div>
-  </header>
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header-placeholder").innerHTML = data;
+      });
+  </script>
 
   <main>
     <section id="notes">
       <h2>Notes</h2>
       <div class="blog-list">
-        <!-- Blog posts will be listed here dynamically or manually -->
-        <p>Nothing to see here yet. This website is under maintenance.</p>
+        <article class="blog-post">
+          <h3><a href="Notes/note01.html">Ye’s Recent Moves</a></h3>
+          <p>Kanye West released a song called <em>Heil Hitler</em>. It got pulled from platforms. People called him antisemitic, insane, dangerous. Media pushed the same narrative they’ve been using for years: Ye has lost it.</p>
+        </article>
       </div>
     </section>
   </main>
