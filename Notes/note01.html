@@ -1,3 +1,11 @@
+<div id="header-placeholder"></div>
+<script>
+  fetch("/header.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("header-placeholder").innerHTML = data;
+    });
+</script>
 <div class="note-container">
   <a href="../index.html" class="back-link">&lt; Back</a>
   <article class="blog-post">
