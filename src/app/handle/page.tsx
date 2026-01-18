@@ -4,16 +4,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { decomposeWord } from './hangul';
+import WORD_LIST from './words.json';
 
 // 5자소 단어 목록
-const WORDS = ['감자', '지진', '나무', '바다', '하늘', '구름', '달빛', '별빛'];
+const WORDS = WORD_LIST;
 
 const JAMO_LENGTH = 5;
 const MAX_ATTEMPTS = 6;
 
-// 한글 2벌식 키보드 배열
+// 한글 기본 자소 키보드 배열 (복합 모음 제거)
 const KEYBOARD_LAYOUT = [
-  ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ'],
+  ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ'],
   ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
   ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ', 'ㅠ', 'ㅜ', 'ㅡ']
 ];
@@ -21,7 +22,7 @@ const KEYBOARD_LAYOUT = [
 // 키보드 키 -> 한글 자소 매핑
 const KEY_TO_JAMO: { [key: string]: string } = {
   'q': 'ㅂ', 'w': 'ㅈ', 'e': 'ㄷ', 'r': 'ㄱ', 't': 'ㅅ',
-  'y': 'ㅛ', 'u': 'ㅕ', 'i': 'ㅑ', 'o': 'ㅐ', 'p': 'ㅔ',
+  'y': 'ㅛ', 'u': 'ㅕ', 'i': 'ㅑ',
   'a': 'ㅁ', 's': 'ㄴ', 'd': 'ㅇ', 'f': 'ㄹ', 'g': 'ㅎ',
   'h': 'ㅗ', 'j': 'ㅓ', 'k': 'ㅏ', 'l': 'ㅣ',
   'z': 'ㅋ', 'x': 'ㅌ', 'c': 'ㅊ', 'v': 'ㅍ',
@@ -344,7 +345,6 @@ export default function HandlePage() {
               <div
                 key={rowIndex}
                 className="flex gap-1 justify-center mb-1"
-                style={{ paddingLeft: rowIndex === 1 ? '20px' : rowIndex === 2 ? '0' : '0' }}
               >
                 {/* 마지막 줄에 삭제 버튼 추가 */}
                 {rowIndex === 2 && (
