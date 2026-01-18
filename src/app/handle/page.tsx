@@ -43,6 +43,7 @@ export default function HandlePage() {
   const [currentAttempt, setCurrentAttempt] = useState(0);
   const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost'>('playing');
   const [showHelp, setShowHelp] = useState(false);
+  const [jamoStatus, setJamoStatus] = useState<{ [key: string]: LetterStatus }>({});
 
   // 게임 초기화
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function HandlePage() {
     setCurrentGuess([]);
     setCurrentAttempt(0);
     setGameStatus('playing');
+    setJamoStatus({});
   };
 
   // 자소 추가
@@ -136,6 +138,21 @@ export default function HandlePage() {
 
     setGuesses(newGuesses);
 
+    // 자소 상태 업데이트 (correct > present > absent 우선순위)
+    const newJamoStatus = { ...jamoStatus };
+    currentGuess.forEach((jamo, i) => {
+      const currentStatus = statusArray[i];
+      const existingStatus = newJamoStatus[jamo];
+
+      // 우선순위: correct > present > absent
+      if (!existingStatus ||
+          (currentStatus === 'correct') ||
+          (currentStatus === 'present' && existingStatus !== 'correct')) {
+        newJamoStatus[jamo] = currentStatus;
+      }
+    });
+    setJamoStatus(newJamoStatus);
+
     // 게임 상태 체크
     const isCorrect = currentGuess.every((jamo, i) => jamo === targetJamos[i]);
     if (isCorrect) {
@@ -155,6 +172,17 @@ export default function HandlePage() {
       case 'present': return 'bg-yellow-500 text-white border-yellow-500';
       case 'absent': return 'bg-gray-400 text-white border-gray-400';
       default: return 'bg-white border-gray-300 text-gray-900';
+    }
+  };
+
+  // 키보드 버튼 색상 가져오기
+  const getKeyboardColor = (jamo: string) => {
+    const status = jamoStatus[jamo];
+    switch (status) {
+      case 'correct': return 'bg-green-200 hover:bg-green-300 text-gray-900';
+      case 'present': return 'bg-yellow-200 hover:bg-yellow-300 text-gray-900';
+      case 'absent': return 'bg-gray-300 hover:bg-gray-400 text-gray-600';
+      default: return 'bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-900';
     }
   };
 
@@ -333,7 +361,7 @@ export default function HandlePage() {
                   <button
                     key={jamo}
                     onClick={() => addJamo(jamo)}
-                    className="bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-900 font-bold py-3 px-2 md:px-3 rounded transition-colors text-base md:text-lg min-w-[32px] md:min-w-[40px]"
+                    className={`${getKeyboardColor(jamo)} font-bold py-3 px-2 md:px-3 rounded transition-colors text-base md:text-lg min-w-[32px] md:min-w-[40px]`}
                     disabled={gameStatus !== 'playing'}
                   >
                     {jamo}
