@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,21 @@ const KEY_TO_JAMO: { [key: string]: string } = {
   'b': 'ㅠ', 'n': 'ㅜ', 'm': 'ㅡ'
 };
 
+// 복합 모음 -> 기본 자소 분해 매핑
+const COMPLEX_VOWEL_MAP: { [key: string]: string[] } = {
+  'ㅐ': ['ㅏ', 'ㅣ'],
+  'ㅔ': ['ㅓ', 'ㅣ'],
+  'ㅒ': ['ㅑ', 'ㅣ'],
+  'ㅖ': ['ㅕ', 'ㅣ'],
+  'ㅘ': ['ㅗ', 'ㅏ'],
+  'ㅙ': ['ㅗ', 'ㅏ', 'ㅣ'],
+  'ㅚ': ['ㅗ', 'ㅣ'],
+  'ㅝ': ['ㅜ', 'ㅓ'],
+  'ㅞ': ['ㅜ', 'ㅓ', 'ㅣ'],
+  'ㅟ': ['ㅜ', 'ㅣ'],
+  'ㅢ': ['ㅡ', 'ㅣ']
+};
+
 type LetterStatus = 'correct' | 'present' | 'absent' | 'empty';
 
 interface Cell {
@@ -55,6 +70,7 @@ export default function HandlePage() {
   const [showNameInput, setShowNameInput] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [submittingScore, setSubmittingScore] = useState(false);
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
 
   // 게임 초기화 및 연승 불러오기
   useEffect(() => {
@@ -65,22 +81,51 @@ export default function HandlePage() {
     }
   }, []);
 
-  // 키보드 입력 처리
+  // 숨겨진 input에 포커스 유지
+  useEffect(() => {
+    if (gameStatus === 'playing' && hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
+    }
+  }, [gameStatus, currentGuess]);
+
+  // 숨겨진 input 이벤트 처리
+  const handleHiddenInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (gameStatus !== 'playing') return;
+
+    const input = e.currentTarget;
+    const value = input.value;
+
+    if (value.length > 0) {
+      const lastChar = value[value.length - 1];
+
+      // 한글 자모인지 확인
+      if (/[ㄱ-ㅎㅏ-ㅣ]/.test(lastChar)) {
+        addJamo(lastChar);
+      }
+
+      // input 초기화
+      input.value = '';
+    }
+  };
+
+  // 키보드 입력 처리 (Backspace, Enter)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameStatus !== 'playing') return;
 
-      // 한글 자소 입력
-      if (KEY_TO_JAMO[e.key.toLowerCase()]) {
-        addJamo(KEY_TO_JAMO[e.key.toLowerCase()]);
-      }
       // Backspace
-      else if (e.key === 'Backspace') {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
         deleteJamo();
       }
       // Enter
       else if (e.key === 'Enter') {
+        e.preventDefault();
         submitGuess();
+      }
+      // 영어 키보드 매핑
+      else if (KEY_TO_JAMO[e.key.toLowerCase()]) {
+        addJamo(KEY_TO_JAMO[e.key.toLowerCase()]);
       }
     };
 
@@ -106,8 +151,18 @@ export default function HandlePage() {
   // 자소 추가
   const addJamo = (jamo: string) => {
     if (gameStatus !== 'playing') return;
-    if (currentGuess.length < JAMO_LENGTH) {
-      setCurrentGuess(prev => [...prev, jamo]);
+
+    // 복합 모음인 경우 분해해서 추가
+    if (COMPLEX_VOWEL_MAP[jamo]) {
+      const decomposed = COMPLEX_VOWEL_MAP[jamo];
+      const remainingSpace = JAMO_LENGTH - currentGuess.length;
+      const jamosToAdd = decomposed.slice(0, remainingSpace);
+      setCurrentGuess(prev => [...prev, ...jamosToAdd]);
+    } else {
+      // 기본 자소는 그대로 추가
+      if (currentGuess.length < JAMO_LENGTH) {
+        setCurrentGuess(prev => [...prev, jamo]);
+      }
     }
   };
 
@@ -274,6 +329,18 @@ export default function HandlePage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 md:p-8 relative">
+      {/* Hidden input for Korean IME */}
+      <input
+        ref={hiddenInputRef}
+        type="text"
+        onInput={handleHiddenInput}
+        className="absolute opacity-0 pointer-events-none"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+      />
+
       {/* Top Navigation */}
       <div className="absolute top-4 left-4 md:top-8 md:left-8">
         <Link
@@ -295,44 +362,45 @@ export default function HandlePage() {
       {/* Help Modal */}
       {showHelp && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] flex items-center justify-center z-50 p-4"
           onClick={() => setShowHelp(false)}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg p-6 max-w-sm w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-white/95 backdrop-blur-sm rounded-xl p-8 max-w-sm w-full border border-gray-200 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">게임 방법</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-medium text-gray-900">게임 방법</h2>
               <button
                 onClick={() => setShowHelp(false)}
-                className="text-gray-600 hover:text-gray-900 text-2xl"
+                className="text-gray-400 hover:text-gray-900 text-2xl"
               >
                 ×
               </button>
             </div>
-            <div className="text-sm text-gray-600 mb-4">
-              <p className="mb-3">키보드 또는 화면 키보드로 5개 자소를 맞추세요</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-green-500 rounded"></div>
+            <div className="text-sm text-gray-600 mb-6">
+              <p className="mb-4">키보드 또는 화면 키보드로 5개 자소를 맞추세요</p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 bg-green-500 rounded"></div>
                   <span>정확한 위치</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-yellow-500 rounded"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 bg-yellow-500 rounded"></div>
                   <span>단어에 포함되지만 위치가 틀림</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-gray-400 rounded"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 bg-gray-400 rounded"></div>
                   <span>단어에 없음</span>
                 </div>
               </div>
             </div>
             <button
               onClick={() => setShowHelp(false)}
-              className="w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              className="w-full bg-gray-900 text-white py-2.5 rounded-lg hover:bg-gray-700 transition-colors text-sm"
             >
               확인
             </button>
