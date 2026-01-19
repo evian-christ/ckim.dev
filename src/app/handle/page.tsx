@@ -423,7 +423,7 @@ export default function HandlePage() {
       />
 
       {/* Top Navigation */}
-      <div className="absolute top-4 left-4 md:top-8 md:left-8">
+      <div className="absolute top-6 left-6 md:top-10 md:left-10">
         <Link
           href="/"
           className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-2xl"
@@ -431,10 +431,16 @@ export default function HandlePage() {
           ←
         </Link>
       </div>
-      <div className="absolute top-4 right-4 md:top-8 md:right-8">
+      <div className="absolute top-6 right-6 md:top-10 md:right-10 flex gap-8 items-center">
+        <Link
+          href="/handle/highscore"
+          className="text-2xl hover:scale-110 transition-transform duration-200"
+        >
+          🏆
+        </Link>
         <button
           onClick={() => setShowHelp(true)}
-          className="w-8 h-8 rounded-full border-2 border-gray-600 text-gray-600 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center font-bold"
+          className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-2xl font-bold"
         >
           ?
         </button>
