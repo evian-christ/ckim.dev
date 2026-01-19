@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { decomposeWord } from './hangul';
 import WORD_LIST from './words.json';
 
@@ -37,6 +39,7 @@ interface Cell {
 }
 
 export default function HandlePage() {
+  const router = useRouter();
   const [targetWord, setTargetWord] = useState('');
   const [targetJamos, setTargetJamos] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<Cell[][]>([]);
@@ -48,6 +51,10 @@ export default function HandlePage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [streak, setStreak] = useState(0);
+  const [showGameOver, setShowGameOver] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [playerName, setPlayerName] = useState('');
+  const [submittingScore, setSubmittingScore] = useState(false);
 
   // 게임 초기화 및 연승 불러오기
   useEffect(() => {
@@ -188,10 +195,9 @@ export default function HandlePage() {
         startNewGame();
       }, 1500);
     } else if (currentAttempt + 1 >= MAX_ATTEMPTS) {
-      // 연승 리셋
-      setStreak(0);
-      localStorage.setItem('handle-streak', '0');
+      // 게임 오버 모달 표시
       setGameStatus('lost');
+      setShowGameOver(true);
     } else {
       setCurrentAttempt(prev => prev + 1);
       setCurrentGuess([]);
@@ -216,6 +222,53 @@ export default function HandlePage() {
       case 'present': return 'bg-yellow-200 hover:bg-yellow-300 text-gray-900';
       case 'absent': return 'bg-gray-300 hover:bg-gray-400 text-gray-600';
       default: return 'bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-900';
+    }
+  };
+
+  // 다시 시작
+  const handleRestart = () => {
+    setStreak(0);
+    localStorage.setItem('handle-streak', '0');
+    setShowGameOver(false);
+    setShowNameInput(false);
+    setPlayerName('');
+    startNewGame();
+  };
+
+  // 하이스코어 등록
+  const handleSubmitHighScore = async () => {
+    if (!playerName.trim() || playerName.length > 32) {
+      return;
+    }
+
+    setSubmittingScore(true);
+
+    try {
+      const { error } = await supabase
+        .from('highscores')
+        .insert([
+          {
+            name: playerName.trim(),
+            score: streak,
+            date: new Date().toISOString()
+          }
+        ]);
+
+      if (error) {
+        console.error('Error submitting score:', error);
+        alert('점수 등록에 실패했습니다.');
+      } else {
+        // 연승 리셋
+        setStreak(0);
+        localStorage.setItem('handle-streak', '0');
+        // 하이스코어 페이지로 이동
+        router.push('/handle/highscore');
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      alert('점수 등록에 실패했습니다.');
+    } finally {
+      setSubmittingScore(false);
     }
   };
 
@@ -342,29 +395,6 @@ export default function HandlePage() {
           </div>
         </motion.div>
 
-        {/* Game Status - Lost only */}
-        {gameStatus === 'lost' && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center mb-6"
-          >
-            <div className="bg-gray-100 rounded-lg p-4 mb-4">
-              <p className="text-xl font-bold text-gray-900 mb-2">
-                😢 실패!
-              </p>
-              <p className="text-gray-600 text-sm mb-3">
-                정답: <span className="font-bold">{targetWord}</span> ({targetJamos.join(' ')})
-              </p>
-              <button
-                onClick={startNewGame}
-                className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-              >
-                새 게임
-              </button>
-            </div>
-          </motion.div>
-        )}
 
         {/* Virtual Keyboard */}
         <motion.div
@@ -463,6 +493,90 @@ export default function HandlePage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Game Over Modal */}
+      {showGameOver && (
+        <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-white/90 backdrop-blur-md rounded-xl p-10 max-w-sm w-full border border-gray-200"
+          >
+            {!showNameInput ? (
+              <>
+                {/* Game Over Screen */}
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">게임 종료</h2>
+                  <p className="text-gray-500 text-sm mb-2">정답</p>
+                  <p className="text-gray-900 font-medium text-lg mb-6">{targetWord}</p>
+
+                  {streak > 0 && (
+                    <div className="inline-flex items-center gap-2 bg-gray-100 px-5 py-2 rounded-full">
+                      <span className="text-xl">🔥</span>
+                      <span className="text-lg font-medium text-gray-700">{streak}연승</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Options */}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleRestart}
+                    className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+                  >
+                    다시 시작
+                  </button>
+                  {streak > 0 && (
+                    <button
+                      onClick={() => setShowNameInput(true)}
+                      className="w-full bg-gray-100 text-gray-900 py-3 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                    >
+                      하이스코어 등록
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Name Input Screen */}
+                <div className="text-center mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">이름 입력</h2>
+                  <p className="text-gray-500 text-xs mb-6">32자 이내</p>
+
+                  <input
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value.slice(0, 32))}
+                    placeholder="이름"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none text-center text-base text-gray-900 mb-2"
+                    maxLength={32}
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-400">{playerName.length}/32</p>
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleSubmitHighScore}
+                    disabled={!playerName.trim() || submittingScore}
+                    className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {submittingScore ? '등록 중...' : '등록하기'}
+                  </button>
+                  <button
+                    onClick={() => setShowNameInput(false)}
+                    className="w-full bg-gray-100 text-gray-600 py-3 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                  >
+                    취소
+                  </button>
+                </div>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
