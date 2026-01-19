@@ -126,35 +126,34 @@ export default function HandlePage() {
     };
   }, [gameStatus, currentGuess]);
 
-  // 숨겨진 input 이벤트 처리
-  const handleHiddenInput = (e: React.FormEvent<HTMLInputElement>) => {
-    if (gameStatus !== 'playing') return;
+  // 한글 키 코드를 자모로 변환
+  const getJamoFromKeyCode = (code: string, shiftKey: boolean): string | null => {
+    // 2벌식 키보드 매핑
+    const keyMap: { [key: string]: [string, string] } = {
+      // [기본, Shift]
+      'KeyQ': ['ㅂ', 'ㅃ'], 'KeyW': ['ㅈ', 'ㅉ'], 'KeyE': ['ㄷ', 'ㄸ'],
+      'KeyR': ['ㄱ', 'ㄲ'], 'KeyT': ['ㅅ', 'ㅆ'],
+      'KeyY': ['ㅛ', 'ㅛ'], 'KeyU': ['ㅕ', 'ㅕ'], 'KeyI': ['ㅑ', 'ㅑ'],
+      'KeyO': ['ㅐ', 'ㅒ'], 'KeyP': ['ㅔ', 'ㅖ'],
+      'KeyA': ['ㅁ', 'ㅁ'], 'KeyS': ['ㄴ', 'ㄴ'], 'KeyD': ['ㅇ', 'ㅇ'],
+      'KeyF': ['ㄹ', 'ㄹ'], 'KeyG': ['ㅎ', 'ㅎ'],
+      'KeyH': ['ㅗ', 'ㅗ'], 'KeyJ': ['ㅓ', 'ㅓ'], 'KeyK': ['ㅏ', 'ㅏ'], 'KeyL': ['ㅣ', 'ㅣ'],
+      'KeyZ': ['ㅋ', 'ㅋ'], 'KeyX': ['ㅌ', 'ㅌ'], 'KeyC': ['ㅊ', 'ㅊ'], 'KeyV': ['ㅍ', 'ㅍ'],
+      'KeyB': ['ㅠ', 'ㅠ'], 'KeyN': ['ㅜ', 'ㅜ'], 'KeyM': ['ㅡ', 'ㅡ']
+    };
 
-    const input = e.currentTarget;
-    const value = input.value;
-
-    if (value.length > 0) {
-      const lastChar = value[value.length - 1];
-
-      // 쌍자음이면 분해
-      if (DOUBLE_CONSONANT_MAP[lastChar]) {
-        DOUBLE_CONSONANT_MAP[lastChar].forEach(j => addJamo(j));
-      }
-      // 복합 모음이면 분해
-      else if (COMPLEX_VOWEL_MAP[lastChar]) {
-        COMPLEX_VOWEL_MAP[lastChar].forEach(j => addJamo(j));
-      }
-      // 기본 자모면 그대로
-      else if (/[ㄱ-ㅎㅏ-ㅣ]/.test(lastChar)) {
-        addJamo(lastChar);
-      }
-
-      // input 초기화
-      input.value = '';
+    if (keyMap[code]) {
+      return keyMap[code][shiftKey ? 1 : 0];
     }
+    return null;
   };
 
-  // 키보드 입력 처리 (Backspace, Enter)
+  // 숨겨진 input의 모든 입력 차단
+  const handleBeforeInput = (e: React.FormEvent<HTMLInputElement>) => {
+    e.preventDefault();
+  };
+
+  // 키보드 입력 처리
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameStatus !== 'playing') return;
@@ -163,21 +162,42 @@ export default function HandlePage() {
       if (e.key === 'Backspace') {
         e.preventDefault();
         deleteJamo();
+        return;
       }
+
       // Enter
-      else if (e.key === 'Enter') {
+      if (e.key === 'Enter') {
         e.preventDefault();
         submitGuess();
+        return;
       }
-      // 영어 키보드 매핑
-      else if (KEY_TO_JAMO[e.key]) {
-        e.preventDefault(); // IME 입력 방지
+
+      // 키 코드로 자모 가져오기 (한글 키보드 대응)
+      const jamoFromCode = getJamoFromKeyCode(e.code, e.shiftKey);
+      if (jamoFromCode) {
+        e.preventDefault();
+        // 쌍자음이면 분해
+        if (DOUBLE_CONSONANT_MAP[jamoFromCode]) {
+          DOUBLE_CONSONANT_MAP[jamoFromCode].forEach(j => addJamo(j));
+        }
+        // 복합 모음이면 분해
+        else if (COMPLEX_VOWEL_MAP[jamoFromCode]) {
+          COMPLEX_VOWEL_MAP[jamoFromCode].forEach(j => addJamo(j));
+        } else {
+          addJamo(jamoFromCode);
+        }
+        return;
+      }
+
+      // 영어 키보드 대비 (e.key 사용)
+      if (KEY_TO_JAMO[e.key]) {
+        e.preventDefault();
         const jamo = KEY_TO_JAMO[e.key];
-        // 쌍자음이면 자동으로 분해해서 입력
+        // 쌍자음이면 분해
         if (DOUBLE_CONSONANT_MAP[jamo]) {
           DOUBLE_CONSONANT_MAP[jamo].forEach(j => addJamo(j));
         }
-        // 복합 모음이면 자동으로 분해해서 입력
+        // 복합 모음이면 분해
         else if (COMPLEX_VOWEL_MAP[jamo]) {
           COMPLEX_VOWEL_MAP[jamo].forEach(j => addJamo(j));
         } else {
@@ -391,7 +411,7 @@ export default function HandlePage() {
       <input
         ref={hiddenInputRef}
         type="text"
-        onInput={handleHiddenInput}
+        onBeforeInput={handleBeforeInput}
         className="absolute opacity-0 pointer-events-none"
         lang="en"
         inputMode="none"
@@ -399,6 +419,7 @@ export default function HandlePage() {
         autoCorrect="off"
         autoCapitalize="off"
         spellCheck="false"
+        readOnly
       />
 
       {/* Top Navigation */}
