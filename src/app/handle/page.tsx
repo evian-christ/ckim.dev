@@ -23,8 +23,9 @@ const KEYBOARD_LAYOUT = [
 
 // 키보드 키 -> 한글 자소 매핑
 const KEY_TO_JAMO: { [key: string]: string } = {
-  'q': 'ㅂ', 'w': 'ㅈ', 'e': 'ㄷ', 'r': 'ㄱ', 't': 'ㅅ',
-  'y': 'ㅛ', 'u': 'ㅕ', 'i': 'ㅑ',
+  'q': 'ㅂ', 'Q': 'ㅃ', 'w': 'ㅈ', 'W': 'ㅉ', 'e': 'ㄷ', 'E': 'ㄸ',
+  'r': 'ㄱ', 'R': 'ㄲ', 't': 'ㅅ', 'T': 'ㅆ',
+  'y': 'ㅛ', 'u': 'ㅕ', 'i': 'ㅑ', 'o': 'ㅐ', 'p': 'ㅔ',
   'a': 'ㅁ', 's': 'ㄴ', 'd': 'ㅇ', 'f': 'ㄹ', 'g': 'ㅎ',
   'h': 'ㅗ', 'j': 'ㅓ', 'k': 'ㅏ', 'l': 'ㅣ',
   'z': 'ㅋ', 'x': 'ㅌ', 'c': 'ㅊ', 'v': 'ㅍ',
@@ -44,6 +45,15 @@ const COMPLEX_VOWEL_MAP: { [key: string]: string[] } = {
   'ㅞ': ['ㅜ', 'ㅓ', 'ㅣ'],
   'ㅟ': ['ㅜ', 'ㅣ'],
   'ㅢ': ['ㅡ', 'ㅣ']
+};
+
+// 쌍자음 -> 기본 자음 분해 매핑
+const DOUBLE_CONSONANT_MAP: { [key: string]: string[] } = {
+  'ㄲ': ['ㄱ', 'ㄱ'],
+  'ㄸ': ['ㄷ', 'ㄷ'],
+  'ㅃ': ['ㅂ', 'ㅂ'],
+  'ㅆ': ['ㅅ', 'ㅅ'],
+  'ㅉ': ['ㅈ', 'ㅈ']
 };
 
 type LetterStatus = 'correct' | 'present' | 'absent' | 'empty';
@@ -75,17 +85,45 @@ export default function HandlePage() {
   // 게임 초기화 및 연승 불러오기
   useEffect(() => {
     startNewGame();
-    const savedStreak = localStorage.getItem('handle-streak');
-    if (savedStreak) {
-      setStreak(parseInt(savedStreak, 10));
+
+    // 페이지 로드 시 연승 리셋 (새로고침 방지)
+    const lastGameTime = localStorage.getItem('handle-last-game-time');
+    const now = Date.now();
+
+    // 마지막 게임으로부터 5초 이상 지났으면 연승 리셋
+    if (!lastGameTime || now - parseInt(lastGameTime) > 5000) {
+      localStorage.setItem('handle-streak', '0');
+      setStreak(0);
+    } else {
+      const savedStreak = localStorage.getItem('handle-streak');
+      if (savedStreak) {
+        setStreak(parseInt(savedStreak, 10));
+      }
     }
   }, []);
 
   // 숨겨진 input에 포커스 유지
   useEffect(() => {
-    if (gameStatus === 'playing' && hiddenInputRef.current) {
-      hiddenInputRef.current.focus();
-    }
+    const focusInput = () => {
+      if (gameStatus === 'playing' && hiddenInputRef.current) {
+        hiddenInputRef.current.focus();
+      }
+    };
+
+    focusInput();
+
+    // 포커스가 벗어나면 다시 포커스
+    const handleFocusLoss = () => {
+      setTimeout(focusInput, 0);
+    };
+
+    window.addEventListener('click', focusInput);
+    window.addEventListener('blur', handleFocusLoss);
+
+    return () => {
+      window.removeEventListener('click', focusInput);
+      window.removeEventListener('blur', handleFocusLoss);
+    };
   }, [gameStatus, currentGuess]);
 
   // 숨겨진 input 이벤트 처리
@@ -98,8 +136,16 @@ export default function HandlePage() {
     if (value.length > 0) {
       const lastChar = value[value.length - 1];
 
-      // 한글 자모인지 확인
-      if (/[ㄱ-ㅎㅏ-ㅣ]/.test(lastChar)) {
+      // 쌍자음이면 분해
+      if (DOUBLE_CONSONANT_MAP[lastChar]) {
+        DOUBLE_CONSONANT_MAP[lastChar].forEach(j => addJamo(j));
+      }
+      // 복합 모음이면 분해
+      else if (COMPLEX_VOWEL_MAP[lastChar]) {
+        COMPLEX_VOWEL_MAP[lastChar].forEach(j => addJamo(j));
+      }
+      // 기본 자모면 그대로
+      else if (/[ㄱ-ㅎㅏ-ㅣ]/.test(lastChar)) {
         addJamo(lastChar);
       }
 
@@ -124,8 +170,19 @@ export default function HandlePage() {
         submitGuess();
       }
       // 영어 키보드 매핑
-      else if (KEY_TO_JAMO[e.key.toLowerCase()]) {
-        addJamo(KEY_TO_JAMO[e.key.toLowerCase()]);
+      else if (KEY_TO_JAMO[e.key]) {
+        e.preventDefault(); // IME 입력 방지
+        const jamo = KEY_TO_JAMO[e.key];
+        // 쌍자음이면 자동으로 분해해서 입력
+        if (DOUBLE_CONSONANT_MAP[jamo]) {
+          DOUBLE_CONSONANT_MAP[jamo].forEach(j => addJamo(j));
+        }
+        // 복합 모음이면 자동으로 분해해서 입력
+        else if (COMPLEX_VOWEL_MAP[jamo]) {
+          COMPLEX_VOWEL_MAP[jamo].forEach(j => addJamo(j));
+        } else {
+          addJamo(jamo);
+        }
       }
     };
 
@@ -243,6 +300,7 @@ export default function HandlePage() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       localStorage.setItem('handle-streak', newStreak.toString());
+      localStorage.setItem('handle-last-game-time', Date.now().toString());
 
       setSuccessMessage('🎉 성공!');
       setTimeout(() => {
@@ -335,6 +393,8 @@ export default function HandlePage() {
         type="text"
         onInput={handleHiddenInput}
         className="absolute opacity-0 pointer-events-none"
+        lang="en"
+        inputMode="none"
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
