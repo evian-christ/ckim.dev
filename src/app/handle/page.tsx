@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { decomposeWord } from './hangul';
 import WORD_LIST from './words.json';
@@ -45,10 +45,17 @@ export default function HandlePage() {
   const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost'>('playing');
   const [showHelp, setShowHelp] = useState(false);
   const [jamoStatus, setJamoStatus] = useState<{ [key: string]: LetterStatus }>({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [streak, setStreak] = useState(0);
 
-  // 게임 초기화
+  // 게임 초기화 및 연승 불러오기
   useEffect(() => {
     startNewGame();
+    const savedStreak = localStorage.getItem('handle-streak');
+    if (savedStreak) {
+      setStreak(parseInt(savedStreak, 10));
+    }
   }, []);
 
   // 키보드 입력 처리
@@ -108,6 +115,19 @@ export default function HandlePage() {
     if (currentGuess.length !== JAMO_LENGTH) return;
     if (currentAttempt >= MAX_ATTEMPTS) return;
 
+    // 단어 목록에 있는지 확인
+    const currentGuessString = currentGuess.join('');
+    const isValidWord = WORDS.some(word => {
+      const wordJamos = decomposeWord(word).join('');
+      return wordJamos === currentGuessString;
+    });
+
+    if (!isValidWord) {
+      setErrorMessage('단어 목록에 없는 단어입니다');
+      setTimeout(() => setErrorMessage(''), 2000);
+      return;
+    }
+
     const newGuesses = [...guesses];
     const statusArray: LetterStatus[] = Array(JAMO_LENGTH).fill('absent');
     const targetCopy = [...targetJamos];
@@ -157,8 +177,20 @@ export default function HandlePage() {
     // 게임 상태 체크
     const isCorrect = currentGuess.every((jamo, i) => jamo === targetJamos[i]);
     if (isCorrect) {
-      setGameStatus('won');
+      // 연승 증가
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      localStorage.setItem('handle-streak', newStreak.toString());
+
+      setSuccessMessage('🎉 성공!');
+      setTimeout(() => {
+        setSuccessMessage('');
+        startNewGame();
+      }, 1500);
     } else if (currentAttempt + 1 >= MAX_ATTEMPTS) {
+      // 연승 리셋
+      setStreak(0);
+      localStorage.setItem('handle-streak', '0');
       setGameStatus('lost');
     } else {
       setCurrentAttempt(prev => prev + 1);
@@ -283,13 +315,15 @@ export default function HandlePage() {
             {guesses.map((guess, attemptIndex) => (
               <div key={attemptIndex} className="flex gap-2 justify-center">
                 {Array.from({ length: JAMO_LENGTH }).map((_, letterIndex) => {
-                  const displayLetter = attemptIndex === currentAttempt
-                    ? (currentGuess[letterIndex] || '')
-                    : guess[letterIndex]?.letter || '';
+                  // 이미 제출된 행이면 guess 데이터 사용, 아니면 현재 입력 중인 데이터 사용
+                  const isSubmitted = guess[letterIndex]?.letter !== '';
+                  const displayLetter = isSubmitted
+                    ? guess[letterIndex]?.letter || ''
+                    : (attemptIndex === currentAttempt ? (currentGuess[letterIndex] || '') : '');
 
-                  const cellStatus = attemptIndex === currentAttempt
-                    ? 'empty'
-                    : guess[letterIndex]?.status || 'empty';
+                  const cellStatus = isSubmitted
+                    ? guess[letterIndex]?.status || 'empty'
+                    : 'empty';
 
                   return (
                     <motion.div
@@ -308,8 +342,8 @@ export default function HandlePage() {
           </div>
         </motion.div>
 
-        {/* Game Status */}
-        {gameStatus !== 'playing' && (
+        {/* Game Status - Lost only */}
+        {gameStatus === 'lost' && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -317,7 +351,7 @@ export default function HandlePage() {
           >
             <div className="bg-gray-100 rounded-lg p-4 mb-4">
               <p className="text-xl font-bold text-gray-900 mb-2">
-                {gameStatus === 'won' ? '🎉 성공!' : '😢 실패!'}
+                😢 실패!
               </p>
               <p className="text-gray-600 text-sm mb-3">
                 정답: <span className="font-bold">{targetWord}</span> ({targetJamos.join(' ')})
@@ -383,7 +417,52 @@ export default function HandlePage() {
           </div>
         </motion.div>
 
+        {/* Streak Display */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-center"
+        >
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-red-100 px-4 py-2 rounded-full">
+            <span className="text-2xl">🔥</span>
+            <span className="font-bold text-gray-900">
+              {streak > 0 ? `${streak}연승 중!` : '도전 시작!'}
+            </span>
+          </div>
+        </motion.div>
+
       </div>
+
+      {/* Toast Overlays */}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50"
+          >
+            <div className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold">
+              {errorMessage}
+            </div>
+          </motion.div>
+        )}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+          >
+            <div className="bg-green-500 text-white px-8 py-4 rounded-lg shadow-2xl font-bold text-2xl">
+              {successMessage}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
