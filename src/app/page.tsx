@@ -12,7 +12,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-bold text-gray-900 mb-12"
+          className="text-4xl md:text-5xl font-bold text-gray-900 mb-12 font-[Helvetica,Arial,sans-serif]"
         >
           Chan Kim
         </motion.h1>
@@ -70,6 +70,44 @@ export default function Home() {
           >
             email
           </motion.a>
+        </motion.div>
+
+        {/* Itch.io Embed */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-16 flex justify-center"
+        >
+          <iframe
+            frameBorder="0"
+            src="https://itch.io/embed/4616720"
+            width="646"
+            height="167"
+            className="w-full max-w-[646px]"
+            title="Humankind in a nutshell by juron"
+          >
+            <a href="https://juron.itch.io/humankind-in-a-nutshell">
+              Humankind in a nutshell by juron
+            </a>
+          </iframe>
+        </motion.div>
+
+        {/* Steam Widget */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-8 flex justify-center"
+        >
+          <iframe
+            src="https://store.steampowered.com/widget/1779280/"
+            frameBorder="0"
+            width="646"
+            height="190"
+            className="w-full max-w-[646px]"
+            title="Steam store widget"
+          />
         </motion.div>
         
       </div>

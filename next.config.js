@@ -1,12 +1,16 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  skipTrailingSlashRedirect: true,
-  distDir: 'dist',
-  images: {
-    unoptimized: true,
-  },
-};
+const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
 
-module.exports = nextConfig;
+/** @type {(phase: string) => import('next').NextConfig} */
+module.exports = (phase) => {
+  const isDev = phase === PHASE_DEVELOPMENT_SERVER;
+
+  return {
+    output: 'export',
+    trailingSlash: true,
+    skipTrailingSlashRedirect: true,
+    ...(isDev ? {} : { distDir: 'dist' }),
+    images: {
+      unoptimized: true,
+    },
+  };
+};
