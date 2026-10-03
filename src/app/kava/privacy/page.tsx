@@ -87,13 +87,12 @@ export default function PrivacyPage() {
   return (
     <>
       <div className="mb-8 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-800">Kava · Privacy</p>
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Privacy policy</h1>
-        <p className="text-sm text-stone-600">Effective / 시행일: <time dateTime="2026-10-03">2026-10-03</time> · Chan Kim</p>
+        <h1 className="text-3xl font-semibold">Privacy policy</h1>
+        <p className="text-sm">Effective / 시행일: <time dateTime="2026-10-03">2026-10-03</time> · Chan Kim</p>
       </div>
       <LanguageLinks />
       <DocumentBody id="ko" title="개인정보처리방침" intro="Kava는 사용자가 연결한 Kavita 서버와 직접 가져온 파일로 만화를 읽는 앱입니다. 아래에서는 정보가 기기에 저장되는 경우와 외부 서비스에 전달되는 경우를 설명합니다." sections={korean} />
-      <hr className="my-14 border-stone-200" />
+      <hr className="my-14 border-black" />
       <DocumentBody id="en" title="Privacy policy" intro="Kava is a comic reader for your own Kavita server and files you import. This policy explains which information stays on your device and which information is sent to external services." sections={english} />
     </>
   );

@@ -55,10 +55,10 @@ const english: DocumentSection[] = [
 
 function Contact({ korean = false }: { korean?: boolean }) {
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white p-6">
-      <p className="mb-2 text-sm text-stone-600">{korean ? "개발자 Chan Kim에게 문의" : "Contact Chan Kim, developer"}</p>
-      <a href="mailto:kavareader@gmail.com?subject=Kava%20Support" className="break-all text-lg font-medium text-orange-800 underline">kavareader@gmail.com</a>
-      <p className="mt-3 text-sm leading-6 text-stone-600">{korean ? "이메일 링크를 누르면 메일 앱이 열립니다. 주소를 복사해 직접 보내셔도 됩니다." : "The email link opens your mail app. You can also copy the address and email directly."}</p>
+    <div>
+      <p className="mb-2 text-sm">{korean ? "개발자 Chan Kim에게 문의" : "Contact Chan Kim, developer"}</p>
+      <a href="mailto:kavareader@gmail.com?subject=Kava%20Support" className="break-all underline">kavareader@gmail.com</a>
+      <p className="mt-3 text-sm leading-6">{korean ? "이메일 링크를 누르면 메일 앱이 열립니다. 주소를 복사해 직접 보내셔도 됩니다." : "The email link opens your mail app. You can also copy the address and email directly."}</p>
     </div>
   );
 }
@@ -67,13 +67,11 @@ export default function SupportPage() {
   return (
     <>
       <div className="mb-8 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-800">Kava · Support</p>
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Here to help.</h1>
-        <p className="leading-7 text-stone-600" lang="ko">연결부터 읽기까지, Kava 사용 중 궁금한 점을 알려 주세요.</p>
+        <h1 className="text-3xl font-semibold">Support</h1>
       </div>
       <LanguageLinks />
       <DocumentBody id="ko" title="고객지원" intro="오류 신고, 기능 제안 또는 개인정보 관련 문의를 이메일로 보내 주세요." sections={korean}><Contact korean /></DocumentBody>
-      <hr className="my-14 border-stone-200" />
+      <hr className="my-14 border-black" />
       <DocumentBody id="en" title="Support" intro="Email us with bug reports, feature requests or questions about your privacy." sections={english}><Contact /></DocumentBody>
     </>
   );
