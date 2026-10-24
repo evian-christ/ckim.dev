@@ -8,7 +8,7 @@ export default function KavaLayout({ children }: { children: React.ReactNode }) 
       </a>
       <div className="mx-auto max-w-3xl px-6 sm:px-10">
         <header className="flex flex-wrap items-center justify-between gap-5 py-7">
-          <span className="text-xl font-semibold">Kava</span>
+          <Link href="/kava/" className="text-xl font-semibold">Kava</Link>
           <nav aria-label="Kava" className="flex flex-wrap gap-5 text-sm">
             <Link href="/kava/privacy/" className="underline">Privacy</Link>
             <Link href="/kava/support/" className="underline">Support</Link>
